@@ -6,7 +6,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import sys
-
+import re
 
 class Recognition:
     ## 이미지 여백 제거
@@ -29,7 +29,37 @@ class Recognition:
         crop = image.crop((92, 140, size[0], size[1]-100))
         # crop.show()
         crop.save('src/results/cropped_image.png')
-        return 'src/results/cropped_image.png', crop'
+        return 'src/results/cropped_image.png', crop
+
+    ## 엑셀 데이터 빈 셀로만 이뤄진 행, 열 제거
+    def removeCell(self, src):
+        df = pd.read_excel(src)
+        df.drop(['Unnamed: 0'], axis = 1, inplace=True) #의도하지 않게 추가되는 Unnamed: 0 컬럼 제거.
+        df_1 = df.dropna(axis=0, thresh=3, inplace=True) #inplace=True, dropna 가 적용된 DataFrame에 dronap 적용.
+        df_1 = df.dropna(axis=1, thresh=2) #thresh, 임계치 설정해서 적용하기 / how='all' 전체가 결측값인 행, 열 제거.
+
+        day_list = []
+        with open("src/results/day_list.text", 'w') as f:
+            f.write(str(df_1.iloc[0]))
+        with open("src/results/day_list.text", 'r') as f:
+            for line in f:
+                pattern = "([0-9]+월)\s*([0-9]+일)"
+                if '월' in line and '일' in line:
+                    day = re.search(pattern, line)
+                    day_list.append(day.group())
+
+        df_2 = df_1.rename(
+            index={
+                df_1.index[0]: '조식',
+                df_1.index[1]: '중식-한식',
+                df_1.index[2]: '중식-일품',
+                df_1.index[3]: '석식',
+            },
+        )
+
+
+        df_2.to_excel('src/results/data.xlsx')
+        return 'src/results/data.xlsx'
 
 
 

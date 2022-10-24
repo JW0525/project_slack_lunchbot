@@ -92,7 +92,7 @@ def extractXlsx(file):
         if (w<1000 and h<500):
             image = cv2.rectangle(img,(x,y),(x+w,y+h),(0,255,0),2)
             box.append([x,y,w,h])
-    plotting = plt.imshow(image,cmap="gray")
+    plotting = plt.imshow(image, cmap="gray")
 
     #Creating two lists to define row and column in which cell is located
     row=[]
@@ -146,7 +146,7 @@ def extractXlsx(file):
         for j in range(len(finalboxes[i])):
             inner=""
             if(len(finalboxes[i][j])==0):
-                outer.append(' ')
+                outer.append('')
             else:
                 for k in range(len(finalboxes[i][j])):
                     y,x,w,h = finalboxes[i][j][k][0],finalboxes[i][j][k][1], finalboxes[i][j][k][2],finalboxes[i][j][k][3]
@@ -170,3 +170,4 @@ def extractXlsx(file):
     data = dataframe.style.set_properties(align="left")
     #Converting it in a excel-file
     data.to_excel("./src/results/output.xlsx")
+    return "./src/results/output.xlsx"
