@@ -170,4 +170,4 @@ def extractXlsx(file):
     data = dataframe.style.set_properties(align="left")
     #Converting it in a excel-file
     data.to_excel("./src/results/output.xlsx")
-    return "./src/results/output.xlsx"
+    return "src/results/output.xlsx"

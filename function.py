@@ -40,6 +40,9 @@ class Recognition:
     def reviseCell(self, src):
         df = pd.read_excel(src)
         df.drop(['Unnamed: 0'], axis = 1, inplace=True) #의도하지 않게 추가되는 Unnamed: 0 컬럼 제거.
+
+        print(df)
+
         df_1 = df.dropna(axis=0, thresh=3, inplace=True) #inplace=True, dropna 가 적용된 DataFrame에 dronap 적용.
         df_1 = df.dropna(axis=1, thresh=2) #thresh, 임계치 설정해서 적용하기 / how='all' 전체가 결측값인 행, 열 제거.
 
@@ -49,15 +52,18 @@ class Recognition:
             pattern = "([0-9]+월)\s*([0-9]+일)"
             for line in f:
                 if re.search(pattern, line):
-                    list_1 = line.replace('70월', '10월').replace('\n','').split("  ")
+                    list_1 = line.replace('710', '10').replace('70월', '10월').replace('\n','').split("  ")
                     day_list = list(filter(None, list_1))
 
         df_2 = df_1.rename(
             index={
-                df_1.index[0]: '조식',
-                df_1.index[1]: '중식-한식',
-                df_1.index[2]: '중식-일품',
-                df_1.index[3]: '석식',
+            # 중식만 크롭하는 경우, index 0 과 1 만 사용한다.
+#                 df_1.index[0]: '조식',
+#                 df_1.index[1]: '중식-한식',
+#                 df_1.index[2]: '중식-일품',
+#                 df_1.index[3]: '석식',
+                df_1.index[0]: '중식-한식',
+                df_1.index[1]: '중식-일품',
             },
             columns={
                 df_1.columns[0]: day_list[0],
@@ -68,8 +74,8 @@ class Recognition:
             }
         )
 
-        df_2.to_excel('src/results/data.xlsx')
-        return 'src/results/data.xlsx', df_2
+        df_2.to_excel('src/results/menu_list.xlsx')
+        return 'src/results/menu_list.xlsx', df_2
 
     ##글자 추출
     def ExtractText(self, src):
@@ -254,6 +260,15 @@ class Recognition:
             cropped = MAX_COLOR_VAL * np.ones(shape=(20, 100), dtype=np.uint8)
         bordered = cv2.copyMakeBorder(cropped, 5, 5, 5, 5, cv2.BORDER_CONSTANT, None, 255)
         return bordered
+
+    ## 이미지 크롭
+    def DoubleCropImage(self, src):
+        image = Image.open(src)
+        size = image.size
+        crop = image.crop((0, 120, size[0], size[1]-142))
+        # crop.show()
+        crop.save('src/results/double_cropped_image.png')
+        return 'src/results/double_cropped_image.png', crop
 
 
 
