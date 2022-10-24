@@ -166,7 +166,7 @@ def extractXlsx(file):
     #Creating a dataframe of the generated OCR list
     arr = np.array(outer)
     dataframe = pd.DataFrame(arr.reshape(len(row),countcol))
-    print(dataframe)
+#     print(dataframe)
     data = dataframe.style.set_properties(align="left")
     #Converting it in a excel-file
     data.to_excel("./src/results/output.xlsx")

@@ -19,6 +19,11 @@ class Recognition:
         rect = img[y:y+h, x:x+w] # Crop the image - note we do this on the original image
         # cv2.imshow("Cropped", rect) # Show it
         resize_rect = cv2.resize(rect, (1085, 760)) # 사이즈 통일
+
+        with open("src/results/day_list.text", 'w') as f:
+            out = pytesseract.image_to_string(resize_rect, lang = "kor")
+            f.write(out)
+
         cv2.imwrite("src/results/trimmed_whiteSpace.png", resize_rect) # Save the image
         return "src/results/trimmed_whiteSpace.png", resize_rect
 
@@ -26,27 +31,26 @@ class Recognition:
     def CropImage(self, src):
         image = Image.open(src)
         size = image.size
-        crop = image.crop((92, 140, size[0], size[1]-100))
+        crop = image.crop((92, 142, size[0], size[1]-117))
         # crop.show()
         crop.save('src/results/cropped_image.png')
         return 'src/results/cropped_image.png', crop
 
-    ## 엑셀 데이터 빈 셀로만 이뤄진 행, 열 제거
-    def removeCell(self, src):
+    ## 빈 행, 열 제거 / columns, index 변경
+    def reviseCell(self, src):
         df = pd.read_excel(src)
         df.drop(['Unnamed: 0'], axis = 1, inplace=True) #의도하지 않게 추가되는 Unnamed: 0 컬럼 제거.
         df_1 = df.dropna(axis=0, thresh=3, inplace=True) #inplace=True, dropna 가 적용된 DataFrame에 dronap 적용.
         df_1 = df.dropna(axis=1, thresh=2) #thresh, 임계치 설정해서 적용하기 / how='all' 전체가 결측값인 행, 열 제거.
 
         day_list = []
-        with open("src/results/day_list.text", 'w') as f:
-            f.write(str(df_1.iloc[0]))
+        ## '첫번째 행 요소 추가'
         with open("src/results/day_list.text", 'r') as f:
+            pattern = "([0-9]+월)\s*([0-9]+일)"
             for line in f:
-                pattern = "([0-9]+월)\s*([0-9]+일)"
-                if '월' in line and '일' in line:
-                    day = re.search(pattern, line)
-                    day_list.append(day.group())
+                if re.search(pattern, line):
+                    list_1 = line.replace('70월', '10월').replace('\n','').split("  ")
+                    day_list = list(filter(None, list_1))
 
         df_2 = df_1.rename(
             index={
@@ -55,29 +59,19 @@ class Recognition:
                 df_1.index[2]: '중식-일품',
                 df_1.index[3]: '석식',
             },
+            columns={
+                df_1.columns[0]: day_list[0],
+                df_1.columns[1]: day_list[1],
+                df_1.columns[2]: day_list[2],
+                df_1.columns[3]: day_list[3],
+                df_1.columns[4]: day_list[4]
+            }
         )
 
-
         df_2.to_excel('src/results/data.xlsx')
-        return 'src/results/data.xlsx'
+        return 'src/results/data.xlsx', df_2
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    ##제글자 추출
+    ##글자 추출
     def ExtractText(self, src):
         img = cv2.imread(src, cv2.IMREAD_COLOR)
         copy_img = img.copy()

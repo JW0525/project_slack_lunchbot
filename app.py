@@ -13,17 +13,11 @@ from function import Recognition
 from imageToXlsx import extractXlsx
 
 src = 'src/images/b93927bd-e957-440d-accc-b4320e29de85.png'
+# src = 'src/images/eaac2f9f-709d-44d0-9c67-9fa70c195de8.png'
 
-# trimmedWhiteSpace = Recognition().trimWhiteSpace(src)
-# croppedImage = Recognition().CropImage(trimmedWhiteSpace[0])
-# csvData = extractXlsx(croppedImage[0])
-
-Recognition().removeCell('src/results/output.xlsx')
-
-
-
-#
-# file = pd.read_csv('new.txt', delimiter = '\t')
-# new_csv_file = file.to_csv( './new.csv')
+trimmedWhiteSpace = Recognition().trimWhiteSpace(src)
+croppedImage = Recognition().CropImage(trimmedWhiteSpace[0])
+xlsxData = extractXlsx(croppedImage[0])
+revisedXlsx = Recognition().reviseCell(xlsxData)
 
 
