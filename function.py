@@ -32,7 +32,6 @@ class Recognition:
         image = Image.open(src)
         size = image.size
         crop = image.crop((92, 142, size[0], size[1]-117))
-        # crop.show()
         crop.save('src/results/cropped_image.png')
         return 'src/results/cropped_image.png', crop
 
@@ -40,8 +39,6 @@ class Recognition:
     def reviseCell(self, src):
         df = pd.read_excel(src)
         df.drop(['Unnamed: 0'], axis = 1, inplace=True) #의도하지 않게 추가되는 Unnamed: 0 컬럼 제거.
-
-        print(df)
 
         df_1 = df.dropna(axis=0, thresh=3, inplace=True) #inplace=True, dropna 가 적용된 DataFrame에 dronap 적용.
         df_1 = df.dropna(axis=1, thresh=2) #thresh, 임계치 설정해서 적용하기 / how='all' 전체가 결측값인 행, 열 제거.
@@ -76,6 +73,15 @@ class Recognition:
 
         df_2.to_excel('src/results/menu_list.xlsx')
         return 'src/results/menu_list.xlsx', df_2
+
+    ## 이미지 크롭
+    def DoubleCropImage(self, src):
+        image = Image.open(src)
+        size = image.size
+        crop = image.crop((0, 120, size[0], size[1]-142))
+        # crop.show()
+        crop.save('src/results/double_cropped_image.png')
+        return 'src/results/double_cropped_image.png', crop
 
     ##글자 추출
     def ExtractText(self, src):
@@ -182,9 +188,7 @@ class Recognition:
             with open("img_pixels.csv", 'a') as f:
                 writer = csv.writer(f)
                 writer.writerow(value)
-
         return fileList
-
 
     ## 테이블 감지
     def DetectImageTable(self, src):
@@ -260,15 +264,6 @@ class Recognition:
             cropped = MAX_COLOR_VAL * np.ones(shape=(20, 100), dtype=np.uint8)
         bordered = cv2.copyMakeBorder(cropped, 5, 5, 5, 5, cv2.BORDER_CONSTANT, None, 255)
         return bordered
-
-    ## 이미지 크롭
-    def DoubleCropImage(self, src):
-        image = Image.open(src)
-        size = image.size
-        crop = image.crop((0, 120, size[0], size[1]-142))
-        # crop.show()
-        crop.save('src/results/double_cropped_image.png')
-        return 'src/results/double_cropped_image.png', crop
 
 
 

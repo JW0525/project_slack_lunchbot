@@ -160,7 +160,7 @@ def extractXlsx(file):
                     out = pytesseract.image_to_string(erosion, lang = "kor")
                     if(len(out)==0):
                         out = pytesseract.image_to_string(erosion, lang = "kor")
-                    inner = inner +" "+ out
+                    inner = inner + out
                 outer.append(inner)
 
     #Creating a dataframe of the generated OCR list
