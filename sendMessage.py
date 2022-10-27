@@ -27,7 +27,7 @@ def send_message(channel, text):
     token = slack_config.bot_token
     headers = {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + token
+        'Authorization': 'Bearer '+token
     }
     payload = {
         'channel': channel,
