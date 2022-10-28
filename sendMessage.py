@@ -9,7 +9,7 @@ from slack_bolt.adapter.socket_mode import SocketModeHandler
 
 # load .env
 load_dotenv()
-bot_token = os.environ.get('bot_token')
+bot_token = os.environ.get('SLACK_BOT_TOKEN')
 
 df = pd.read_excel('src/results/menu_list.xlsx', engine='openpyxl')
 today = datetime.now().strftime('%m월 %d일')
@@ -28,10 +28,10 @@ if today in df.columns:
     def sendToSay(message, say):
         say(todayCourse)
 
-def send_message(channel, text):
+def send_message(token, channel, text):
     headers = {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer '+bot_token
+        'Authorization': 'Bearer '+token
     }
     payload = {
         'channel': channel,
@@ -44,7 +44,7 @@ def send_message(channel, text):
 
 if __name__ == '__main__':
     if today in df.columns:
-        send_message('C04857SGN2V', todayKoreanMeal + todayCourse)
+        send_message(bot_token, 'C04857SGN2V', todayKoreanMeal + todayCourse)
 #     else:
 #         send_message('C04857SGN2V', '오늘의 메뉴가 등록되지 않았습니다. 메뉴 추가를 요청해주세요.')
-#     SocketModeHandler(app, .env.app_token).start()
+#     SocketModeHandler(app, .env.SLACK_APP_TOKEN).start()
