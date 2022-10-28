@@ -18,8 +18,8 @@ class Recognition:
         x, y, w, h = cv2.boundingRect(coords) # Find minimum spanning bounding box
         rect = img[y:y+h, x:x+w] # Crop the image - note we do this on the original image
         # cv2.imshow("Cropped", rect) # Show it
-        resize_rect = cv2.resize(rect, (1085, 760)) # 사이즈 통일
-
+        resize_rect = cv2.resize(rect, (1085, 760)) # unify size
+ㅇ
         with open("src/results/day_list.text", 'w') as f:
             out = pytesseract.image_to_string(resize_rect, lang = "kor")
             f.write(out)
